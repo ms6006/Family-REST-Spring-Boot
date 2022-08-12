@@ -1,0 +1,26 @@
+//HOW_TO_RUN_DOCKER_CONTAINER
+
+//Najpierw utwórzmy i uruchommy kontener bazy danych postgresql
+//Poberamy image postgres
+docker pull postgres
+
+//Uruchomimy kontener bazy danych z portem: 5432 o nazwie: postgresdb i bazą danych: familydb
+docker run -p 5432:5432 --name postgresdb -e POSTGRES_PASSWORD=root -e POSTGRES_DB=familydb postgres
+
+//Stwórzmy sieć: spring-net
+docker network create spring-net
+
+//Podłączmy naszą bazę danych do sieci
+docker network connect spring-net postgresdb
+
+//Teraz stwórzmy i uruchommy kontenery aplikacji
+//Image`s można uzyskać z repozytoriów, które stworzyłem na docker hubie(wtedy image`s będą nazywać się nik537/family_app i nik537/family_member_app)
+docker pull nik537/family_app
+docker pull nik537/family_member_app
+//lub uruchamiając budujący skrypt Apache Maven(wtedy image`s będą nazywać się family_app i family_member_app)
+
+//Uruchomimy kontener family_member_app z portem: 9090 o nazwie: family-member-app, podłączmy do sieci: spring-net i określimy dane do połączenia z bazą danych
+docker run -p 9090:9090 --network spring-net --name family-member-app -e HOST=postgresdb -e PORT=5432 -e USER=postgres -e PASS=root family_member_app
+
+//Uruchomimy kontener family_app z portem: 8080 o nazwie: family-app, podłączmy do sieci: spring-net, określimy dane do połączenia z bazą danych i określimy nazwę kontenera aplikacji family-member-app, aby można było uzyskać do niego dostęp
+docker run -p 8080:8080 --network spring-net --name family-app -e HOST=postgresdb -e PORT=5432 -e USER=postgres -e PASS=root -e SERVER=family-member-app family_app
