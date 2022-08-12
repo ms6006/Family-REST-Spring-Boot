@@ -37,3 +37,8 @@ docker run -p 9090:9090 --network spring-net --name family-member-app -e HOST=po
 ```
 docker run -p 8080:8080 --network spring-net --name family-app -e HOST=postgresdb -e PORT=5432 -e USER=postgres -e PASS=root -e SERVER=family-member-app family_app
 ```
+
+**Postman JSON link**
+```
+https://www.getpostman.com/collections/05cadda8e3fba2edc7b8
+```
